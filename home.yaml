@@ -1,0 +1,789 @@
+title: Home
+views:
+  - title: Énergie
+    path: energie
+    icon: mdi:home
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: 🔋 Énergie en Direct
+            heading_style: title
+          - type: custom:bar-card
+            name: 🏠 Conso Maison
+            unit_of_measurement: kW
+            min: 0
+            max: 12
+            height: 25
+            direction: right
+            positions: &bar_positions
+              name: outside
+              value: inside
+              icon: outside
+            animation: &bar_animation_off
+              state: 'on'
+              speed: 3
+            severity:
+              - from: 0
+                to: 0.5
+                color: '#00ff90'
+              - from: 0.5
+                to: 2
+                color: '#ffa500'
+              - from: 2
+                to: 12
+                color: '#ff1a1a'
+            entities:
+              - entity: sensor.envoy_passerelle_consommation_electrique_actuelle
+            card_mod:
+              style: |
+                {% set val = states('sensor.envoy_passerelle_consommation_electrique_actuelle') | float(0) %}
+                {% if val <= 0 %}
+                  {% set color = '#ffffff' %}
+                {% elif val <= 0.5 %}
+                  {% set color = '#00ff90' %}
+                {% elif val <= 2 %}
+                  {% set color = '#ffa500' %}
+                {% else %}
+                  {% set color = '#ff1a1a' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+          - type: custom:bar-card
+            name: ☀️ Prod Solaire
+            unit_of_measurement: kW
+            min: 0
+            max: 10
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 0.99
+                color: '#111111'
+              - from: 1
+                to: 10
+                color: '#00ff90'
+            entities:
+              - entity: sensor.envoy_passerelle_production_d_electricite_actuelle
+            card_mod:
+              style: |
+                {% set val = states('sensor.envoy_passerelle_production_d_electricite_actuelle') | float(0) %}
+                {% if val < 1 %}
+                  {% set color = '#ffffff' %}
+                {% else %}
+                  {% set color = '#00ff90' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+          - type: custom:bar-card
+            name: ⚡ Conso Nette
+            unit_of_measurement: kW
+            min: -9
+            max: 10
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: -9
+                to: -0.01
+                color: '#00c8ff'
+              - from: 0
+                to: 0.5
+                color: '#00ff90'
+              - from: 0.5
+                to: 2
+                color: '#ffa500'
+              - from: 2
+                to: 10
+                color: '#ff1a1a'
+            entities:
+              - entity: sensor.envoy_passerelle_current_net_power_consumption
+            card_mod:
+              style: |
+                {% set val = states('sensor.envoy_passerelle_current_net_power_consumption') | float(0) %}
+                {% if val < 0 %}
+                  {% set color = '#00c8ff' %}
+                {% elif val <= 0.5 %}
+                  {% set color = '#00ff90' %}
+                {% elif val <= 2 %}
+                  {% set color = '#ffa500' %}
+                {% else %}
+                  {% set color = '#ff1a1a' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+          - type: custom:bar-card
+            name: ⬆️ Exportation
+            unit_of_measurement: kW
+            min: 0
+            max: 10
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 0.05
+                color: '#111111'
+              - from: 0.05
+                to: 2
+                color: '#00c8ff'
+              - from: 2
+                to: 10
+                color: '#00ff90'
+            entities:
+              - entity: sensor.energy_exported
+            card_mod:
+              style: |
+                {% set val = states('sensor.energy_exported') | float(0) %}
+                {% if val <= 0.05 %}
+                  {% set color = '#ffffff' %}
+                {% elif val <= 2 %}
+                  {% set color = '#00c8ff' %}
+                {% else %}
+                  {% set color = '#00ff90' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+          - type: heading
+            heading: 🔋 Énergie Cumulée
+            heading_style: title
+      - type: grid
+        columns: 1
+        cards:
+          - type: custom:bar-card
+            name: 🌞 Moyenne de prod PV (10min)
+            unit_of_measurement: kW
+            min: 0
+            max: 10
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 0.99
+                color: '#111111'
+              - from: 1
+                to: 10
+                color: '#00ff90'
+            entities:
+              - entity: sensor.maison_prod_mean_10min
+            card_mod:
+              style: |
+                {% set val = states('sensor.maison_prod_mean_10min') | float(0) %}
+                {% if val < 1 %}
+                  {% set color = '#ffffff' %}
+                {% else %}
+                  {% set color = '#00ff90' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+          - type: custom:bar-card
+            name: ⬆️ Exportation moyenne (5 min)
+            unit_of_measurement: kW
+            min: 0
+            max: 6
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 0.05
+                color: '#111111'
+              - from: 0.05
+                to: 2
+                color: '#00c8ff'
+              - from: 2
+                to: 6
+                color: '#00ff90'
+            entities:
+              - entity: sensor.maison_export_5min
+            card_mod:
+              style: |
+                {% set val = states('sensor.maison_export_5min') | float(0) %}
+                {% if val <= 0.05 %}
+                  {% set color = '#ffffff' %}
+                {% elif val <= 2 %}
+                  {% set color = '#00c8ff' %}
+                {% else %}
+                  {% set color = '#00ff90' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+          - type: custom:bar-card
+            name: 🏠 Conso jour maison
+            unit_of_measurement: kWh
+            decimal: 2
+            min: 0
+            max: 40
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 8
+                color: '#00ff90'
+              - from: 8
+                to: 20
+                color: '#ffa500'
+              - from: 20
+                to: 40
+                color: '#ff1a1a'
+            entities:
+              - entity: sensor.maison_conso_jour
+            card_mod:
+              style: |
+                {% set val = states('sensor.maison_conso_jour') | float(0) %}
+                {% if val < 8 %}
+                  {% set color = '#00ff90' %}
+                {% elif val < 20 %}
+                  {% set color = '#ffa500' %}
+                {% else %}
+                  {% set color = '#ff1a1a' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+                bar-card-value-text, bar-card-name {
+                  color: #eef3fb;
+                  font-weight: normal;
+                }
+          - type: custom:bar-card
+            name: 🔥 Conso jour PAC
+            unit_of_measurement: kWh
+            min: 0
+            max: 50
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 8
+                color: '#00ff90'
+              - from: 8
+                to: 20
+                color: '#ffa500'
+              - from: 20
+                to: 50
+                color: '#ff1a1a'
+            entities:
+              - entity: sensor.stiebel_eltron_isg_consumed_heating_today
+            card_mod:
+              style: |
+                {% set val = states('sensor.stiebel_eltron_isg_consumed_heating_today') | float(0) %}
+                {% if val < 8 %}
+                  {% set color = '#00ff90' %}
+                {% elif val < 20 %}
+                  {% set color = '#ffa500' %}
+                {% else %}
+                  {% set color = '#ff1a1a' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+                bar-card-value-text, bar-card-name {
+                  color: #eef3fb;
+                  font-weight: normal;
+                }
+          - type: custom:bar-card
+            name: 🔥 Prod jour PAC
+            unit_of_measurement: kWh
+            min: 0
+            max: 100
+            height: 25
+            direction: right
+            positions: *bar_positions
+            animation: *bar_animation_off
+            severity:
+              - from: 0
+                to: 15
+                color: '#111111'
+              - from: 15
+                to: 60
+                color: '#00c8ff'
+              - from: 60
+                to: 100
+                color: '#00ff90'
+            entities:
+              - entity: sensor.stiebel_eltron_isg_produced_heating_today
+            card_mod:
+              style: |
+                {% set val = states('sensor.stiebel_eltron_isg_produced_heating_today') | float(0) %}
+                {% if val < 15 %}
+                  {% set color = '#111111' %}
+                {% elif val < 60 %}
+                  {% set color = '#00c8ff' %}
+                {% else %}
+                  {% set color = '#00ff90' %}
+                {% endif %}
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 0 10px {{ color }}, 0 6px 18px rgba(0,0,0,0.42);
+                  transition: box-shadow 220ms ease, transform 220ms ease;
+                }
+                bar-card-value-text, bar-card-name {
+                  color: #eef3fb;
+                  font-weight: normal;
+                }
+      - type: grid
+        cards:
+          - type: heading
+            heading: 📈 Historique des Flux
+            heading_style: title
+          - type: custom:apexcharts-card
+            graph_span: 12h
+            header:
+              show: true
+              title: Évolution Prod / Conso
+              show_states: false
+              colorize_states: true
+            apex_config:
+              chart:
+                height: 300
+                background: '#0f141b'
+                foreColor: '#eef3fb'
+              stroke:
+                width: 2
+                curve: smooth
+              grid:
+                show: true
+                borderColor: '#2a3342'
+                strokeDashArray: 2
+              legend:
+                show: true
+                position: top
+            series:
+              - entity: sensor.envoy_passerelle_production_d_electricite_actuelle
+                name: ☀️ Solaire
+                color: '#00ff90'
+                type: area
+                opacity: 0.25
+              - entity: sensor.envoy_passerelle_consommation_electrique_actuelle
+                name: 🏠 Maison
+                color: '#ff1a1a'
+                type: line
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 16px;
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+                }
+  - title: Tesla
+    path: tesla
+    icon: mdi:car-electric
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: 🚗 Pilotage Tesla K2000
+            heading_style: title
+          - type: entities
+            title: 🔧 Contrôle & Automatisations
+            entities:
+              - entity: automation.k2000_charge_pv_dynamique_2_16a_surplus_boost
+                name: 🔄 Charge Solaire Dynamique
+                icon: mdi:solar-power-variant
+              - type: custom:template-entity-row
+                entity: switch.k2000_recharge
+                name: 🚗 État de la Recharge
+                icon: mdi:car-electric
+                state: >
+                  {% if is_state('switch.k2000_recharge','on') %}🟢 ON{% else %}🔴 OFF{% endif %}
+              - entity: number.k2000_courant_de_recharge
+                name: ⚡ Consigne Intensité
+                secondary_info: state
+              - entity: number.k2000_limite_de_recharge
+                name: 🔋 Limite de Charge (%)
+                secondary_info: state
+            show_header_toggle: false
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  color: #eef3fb;
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+                }
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Forcer la charge
+                icon: mdi:flash
+                show_name: true
+                show_icon: true
+                icon_height: 44px
+                tap_action:
+                  action: call-service
+                  service: automation.trigger
+                  target:
+                    entity_id: automation.k2000_forcer_recharge_securite_cablev
+                card_mod:
+                  style: |
+                    ha-card {
+                      --mdc-theme-primary: #ff4d4d;
+                      --card-mod-icon-color: #ff2a2a;
+                      color: #ffe8e8;
+                      border-radius: 18px;
+                      min-height: 112px;
+                      background:
+                        radial-gradient(circle at 20% 0%, rgba(255,64,64,0.20), transparent 45%),
+                        linear-gradient(165deg, rgba(56,8,8,0.98), rgba(18,24,34,0.98));
+                      border: 2px solid #ffffff;
+                      box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.08),
+                        0 0 16px rgba(255,25,25,0.30),
+                        0 10px 24px rgba(0,0,0,0.45);
+                    }
+                    ha-icon {
+                      filter: drop-shadow(0 0 8px rgba(255,30,30,0.35));
+                    }
+                    .name {
+                      font-size: 0.95rem;
+                      font-weight: normal;
+                      letter-spacing: 0.02em;
+                    }
+              - type: button
+                name: Stop recharge
+                icon: mdi:flash-off
+                show_name: true
+                show_icon: true
+                icon_height: 44px
+                tap_action:
+                  action: call-service
+                  service: automation.trigger
+                  target:
+                    entity_id: automation.k2000_forcer_arret_recharge_notification
+                card_mod:
+                  style: |
+                    ha-card {
+                      --mdc-theme-primary: #1ee08e;
+                      --card-mod-icon-color: #00d977;
+                      color: #dfffee;
+                      border-radius: 18px;
+                      min-height: 112px;
+                      background:
+                        radial-gradient(circle at 20% 0%, rgba(0,220,120,0.20), transparent 45%),
+                        linear-gradient(165deg, rgba(6,50,28,0.98), rgba(18,24,34,0.98));
+                      border: 2px solid #ffffff;
+                      box-shadow:
+                        inset 0 1px 0 rgba(255,255,255,0.08),
+                        0 0 16px rgba(0,240,130,0.28),
+                        0 10px 24px rgba(0,0,0,0.45);
+                    }
+                    ha-icon {
+                      filter: drop-shadow(0 0 8px rgba(0,240,130,0.30));
+                    }
+                    .name {
+                      font-size: 0.95rem;
+                      font-weight: normal;
+                      letter-spacing: 0.02em;
+                    }
+  - title: Statistique
+    path: statistique
+    icon: mdi:calculator
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: ⏱️ Valeurs instantanées
+            heading_style: title
+          - type: custom:power-flow-card-plus
+            use_new_flow_rate_model: false
+            w_decimals: 0
+            kw_decimals: 2
+            min_flow_rate: 0.2
+            max_flow_rate: 1.5
+            clickable_entities: true
+            entities:
+              grid:
+                name: Réseau
+                icon: mdi:transmission-tower
+                entity:
+                  consumption: sensor.maison_import_kw_positive
+                  production: sensor.maison_export_kw_positive
+              solar:
+                entity: sensor.maison_prod_kw_norm
+                name: Solaire
+                icon: mdi:solar-power-variant
+              home:
+                entity: sensor.maison_conso_kw_norm
+                name: Maison
+                icon: mdi:home
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 18px;
+                  background: #2b2d31;
+                  color: #e5e7eb;
+                  border: 2px solid #ffffff;
+                  box-shadow: none;
+                }
+          - type: heading
+            heading: ∑ Valeurs journée
+            heading_style: title
+          - type: energy-distribution
+            link_dashboard: false
+            energy_date_selection: false
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 18px;
+                  background: #2b2d31;
+                  color: #e5e7eb;
+                  border: 2px solid #ffffff;
+                  box-shadow: none;
+                }
+  - title: PAC
+    path: pac
+    icon: mdi:heat-pump
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: 🔥 PAC & Décomposition conso
+            heading_style: title
+          - type: custom:apexcharts-card
+            chart_type: donut
+            header:
+              show: true
+              title: Décomposition conso du jour (base 100%)
+              show_states: true
+              colorize_states: true
+            apex_config:
+              chart:
+                height: 300
+                background: '#0f141b'
+                foreColor: '#eef3fb'
+              legend:
+                show: true
+                position: bottom
+              stroke:
+                show: false
+              dataLabels:
+                enabled: true
+            series:
+              - entity: sensor.maison_autres_conso_jour
+                name: 🏠 Autres conso
+                color: '#00c8ff'
+              - entity: sensor.maison_pac_chauffage_jour
+                name: 🔥 PAC chauffage
+                color: '#ff6b6b'
+              - entity: sensor.maison_pac_ecs_jour
+                name: 🚿 PAC eau chaude
+                color: '#ffa500'
+              - entity: sensor.maison_tesla_conso_jour_safe
+                name: 🚗 Tesla recharge
+                color: '#00ff90'
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  color: #eef3fb;
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+                }
+          - type: custom:apexcharts-card
+            chart_type: donut
+            header:
+              show: true
+              title: Décomposition conso totale (mise en service)
+              show_states: true
+              colorize_states: true
+            apex_config:
+              chart:
+                height: 300
+                background: '#0f141b'
+                foreColor: '#eef3fb'
+              legend:
+                show: true
+                position: bottom
+              stroke:
+                show: false
+              dataLabels:
+                enabled: true
+            series:
+              - entity: sensor.maison_autres_conso_totale
+                name: 🏠 Autres conso
+                color: '#00c8ff'
+              - entity: sensor.maison_pac_chauffage_total
+                name: 🔥 PAC chauffage
+                color: '#ff6b6b'
+              - entity: sensor.maison_pac_ecs_total
+                name: 🚿 PAC eau chaude
+                color: '#ffa500'
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  color: #eef3fb;
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+                }
+
+          - type: horizontal-stack
+            cards:
+              - type: gauge
+                entity: sensor.maison_pac_cop_jour
+                name: COP PAC jour
+                min: 0
+                max: 5
+                needle: true
+                severity:
+                  green: 3
+                  yellow: 2
+                  red: 0
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 14px;
+                      background: rgba(16,22,30,0.96);
+                      color: #eef3fb;
+                      border: 2px solid #ffffff;
+                      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+                      padding: 4px 2px;
+                    }
+                    .value {
+                      font-size: 28px !important;
+                    }
+                    .name {
+                      font-weight: normal !important;
+                    }
+              - type: gauge
+                entity: sensor.maison_pac_cop_total
+                name: COP PAC total
+                min: 0
+                max: 5
+                needle: true
+                severity:
+                  green: 3
+                  yellow: 2
+                  red: 0
+                card_mod:
+                  style: |
+                    ha-card {
+                      border-radius: 14px;
+                      background: rgba(16,22,30,0.96);
+                      color: #eef3fb;
+                      border: 2px solid #ffffff;
+                      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+                      padding: 4px 2px;
+                    }
+                    .value {
+                      font-size: 28px !important;
+                    }
+                    .name {
+                      font-weight: normal !important;
+                    }
+          - type: custom:apexcharts-card
+            graph_span: 24h
+            span:
+              start: day
+            header:
+              show: true
+              title: ❄️ Cycles de dégivrage PAC (aujourd'hui)
+              show_states: false
+            apex_config:
+              chart:
+                height: 220
+                background: '#0f141b'
+                foreColor: '#eef3fb'
+                toolbar:
+                  show: false
+              stroke:
+                width: 2
+                curve: stepline
+              grid:
+                show: true
+                borderColor: '#2a3342'
+                strokeDashArray: 2
+              yaxis:
+                min: 0
+                max: 1
+                tickAmount: 1
+                decimalsInFloat: 0
+                labels:
+                  formatter: "EVAL:function(value){ return value >= 1 ? 'ON' : 'OFF'; }"
+              xaxis:
+                labels:
+                  datetimeUTC: false
+              dataLabels:
+                enabled: false
+              legend:
+                show: false
+            series:
+              - entity: binary_sensor.stiebel_eltron_isg_evaporator_defrost
+                name: Dégivrage PAC
+                type: area
+                color: '#7dd3fc'
+                opacity: 0.28
+                stroke_width: 2
+                transform: |
+                  return x === 'on' ? 1 : 0;
+            card_mod:
+              style: |
+                ha-card {
+                  border-radius: 16px;
+                  background: rgba(16,22,30,0.96);
+                  color: #eef3fb;
+                  border: 2px solid #ffffff;
+                  box-shadow: 0 6px 18px rgba(0,0,0,0.42);
+                }
